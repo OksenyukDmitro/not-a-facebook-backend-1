@@ -5,8 +5,8 @@ import { authCheck } from './utils';
 
 export const typeDefs = gql`
   extend type Query {
-    posts(skip: Int, limit: Int): [Post]!
-    myPosts(skip: Int, limit: Int): [Post]!
+    posts(offset: Int!, limit: Int!): [Post]!
+    myPosts(offset: Int!, limit: Int!): [Post]!
   }
 
   extend type Mutation {
@@ -37,13 +37,13 @@ export const resolvers = {
   Query: {
     posts: (root, args, ctx) => {
       authCheck(ctx);
-      const { limit, skip } = args;
-      return PostsService.get(skip, limit);
+      const { limit, offset } = args;
+      return PostsService.find({}, { limit, offset });
     },
     myPosts: (root, args, ctx) => {
       authCheck(ctx);
-      const { limit, skip } = args;
-      return PostsService.getPostsByUserId(ctx.user._id, skip, limit);
+      const { limit, offset } = args;
+      return PostsService.findByUserId(ctx.user._id, { limit, offset });
     },
   },
   Mutation: {
